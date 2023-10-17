@@ -11,16 +11,4 @@ axiosClient.interceptors.request.use(config => {
   return config;
 })
 
-axiosClient.interceptors.response.use(response => {
-  return response;
-}, error => {
-  if (error.response.status === 401) {
-    sessionStorage.removeItem('TOKEN')
-    router.push({name: 'Login'})
-  } else if (error.response.status === 404) {
-    router.push({name: 'NotFound'})
-  }
-  return error;
-})
-
 export default axiosClient;

@@ -14,7 +14,14 @@
     </router-link>
   </p>
   <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-    <form class="space-y-6" @submit="register">
+    <form class="mt-8 space-y-6" @submit="register">
+      <Alert v-if="Object.keys(errors).length" class="flex-col items-stretch text-sm">
+        <div v-for="(field, i) of Object.keys(errors)" :key="i">
+          <div v-for="(error, ind) of errors[field] || []" :key="ind">
+            * {{ error }}
+          </div>
+        </div>
+      </Alert>
       <div>
         <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Full name</label>
         <div class="mt-2">
@@ -57,6 +64,8 @@
 <script setup>
 import  store from "../store";
 import { useRouter } from "vue-router";
+import {ref} from "vue";
+import Alert from "../components/Alert.vue";
 
 const router = useRouter();
 const user = {
@@ -65,6 +74,10 @@ const user = {
   password: "",
   password_confirmation: "",
 };
+
+const loading = ref(false);
+const errors = ref({});
+
 function register(ev) {
   ev.preventDefault();
   store
@@ -74,6 +87,13 @@ function register(ev) {
         name: "Dashboard",
       });
     })
+    .catch((error) => {
+      loading.value = false;
+      if (error.response.status === 422) {
+        console.log(error);
+        errors.value = error.response.data.errors;
+      }
+    });
 }
 </script>
 

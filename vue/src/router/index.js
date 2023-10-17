@@ -5,6 +5,7 @@ import AuthLayout from "../components/AuthLayout.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Posts from '../views/Posts.vue'
+import PostView from '../views/PostView.vue'
 import store from "../store";
 
 const routes = [
@@ -16,6 +17,8 @@ const routes = [
     children: [
       { path: "/dashboard", name: "Dashboard", component: Dashboard },
       { path: "/posts", name: "Posts", component: Posts },
+      { path: "/posts/create", name: "PostCreate", component: PostView },
+      { path: "/posts/:id", name: "PostView", component: PostView },
     ]
   },
   {
