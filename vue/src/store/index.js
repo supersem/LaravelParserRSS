@@ -3,29 +3,32 @@ import axiosClient from '../axios'
 
 const store = createStore({
     state: {
-        user: {
-            data: {},
-            token: sessionStorage.getItem("TOKEN"),
-        },
-
-        posts: {
-          loading: false,
-          links: [],
-          data: []
-        },
-
-        currentPost: {
+      user: {
           data: {},
-          loading: false,
-        },
+          token: sessionStorage.getItem("TOKEN"),
+      },
 
-        notification: {
-          show: false,
-          type: 'success',
-          message: ''
-        }
+      posts: {
+        loading: false,
+        links: [],
+        data: []
+      },
+
+      currentPost: {
+        data: {},
+        loading: false,
+      },
+
+      notification: {
+        show: false,
+        type: 'success',
+        message: ''
+      }
     },
-    getters: {},
+
+    getters: {
+    },
+    
     actions: {
       register({commit}, user) {
         return axiosClient.post('/register', user)
@@ -53,11 +56,15 @@ const store = createStore({
           })
       },
 
-      getPosts({ commit }, {url = null} = {}) {
-        commit('setPostsLoading', true)
+      getPosts({ commit }, searchQuery, {url = null} = {}) {
+        commit('setPostsLoading', true);
         url = url || "/posts";
-        return axiosClient.get(url).then((res) => {
-          commit('setPostsLoading', false)
+        return axiosClient.get(url, {
+          params: {
+          q: searchQuery,
+        },
+        }).then((res) => {
+          commit('setPostsLoading', false);
           commit("setPosts", res.data);
           return res;
         });
@@ -108,8 +115,9 @@ const store = createStore({
         }
 
         return response;
-      },
+      }
     },
+
     mutations: {
       logout: (state) => {
         state.user.token = null;
@@ -142,7 +150,6 @@ const store = createStore({
       setCurrentPost: (state, post) => {
         state.currentPost.data = post.data;
       },
-
       notify: (state, {message, type}) => {
         state.notification.show = true;
         state.notification.type = type;

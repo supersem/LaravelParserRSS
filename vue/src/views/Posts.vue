@@ -3,6 +3,14 @@
     <template v-slot:header>
       <div class="flex justify-between items-center">
         <h1 class="text-3xl font-bold text-gray-900">Posts</h1>
+        <div>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search posts..."
+            class="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+          />
+        </div>
         <router-link
           :to="{ name: 'PostCreate' }"
           class="py-2 px-3 text-white bg-emerald-500 rounded-md hover:bg-emerald-600"
@@ -31,10 +39,11 @@
       <div
         v-for="post in posts.data"
         :key="post.id"
-        class="flex flex-col py-4 px-6 shadow-md bg-white hover:bg-gray-50 h-[220px]"
+        class="flex flex-col py-4 px-6 shadow-md bg-white hover:bg-gray-50 h-[270px]"
       >
         <h4 class="mt-4 md-5 text-lg font-bold">{{ post.title  }}</h4>
         <div v-html="post.content" class="py-4 overflow-hidden flex-1"></div>
+        <div v-html="post.published_at" class="py-4 overflow-hidden flex-1"></div>
         <div class="flex justify-between items-center mt-3">
           <router-link
             :to="{ name: 'PostView', params: { id: post.id } }"
@@ -81,7 +90,6 @@
           class="relative z-0 inline-flex justify-center rounded-md shadow-sm -space-x-px"
           aria-label="Pagination"
         >
-          <!-- Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" -->
           <a
             v-for="(link, i) of posts.links"
             :key="i"
@@ -112,12 +120,20 @@
 
 <script setup>
 import store from "../store";
-import { computed } from "vue";
+import {ref, computed, watchEffect} from "vue";
 import PageComponent from '../components/PageComponent.vue'
 
 const posts = computed(() => store.state.posts);
 
-store.dispatch("getPosts");
+const searchQuery = ref(null);
+
+const getPosts = () => {
+      store.dispatch('getPosts', searchQuery.value);
+    };
+
+watchEffect((searchQuery) => {
+  getPosts();
+});
 
 function deletePost(post) {
   if (

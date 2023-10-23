@@ -96,6 +96,19 @@
               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
             />
           </div>
+          <div>
+            <label for="published_at" class="block text-sm font-medium text-gray-700"
+            >Published</label
+            >
+            <input
+              type="text"
+              name="published_at"
+              id="published_at"
+              v-model="model.published_at"
+              autocomplete="post_published_at"
+              class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
         </div>
         <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
           <button
@@ -142,12 +155,6 @@ watch(
 
 if (route.params.id) {
   store.dispatch("getPost", route.params.id);
-}
-
-if (route.params.id) {
-  model.value = store.state.posts.data.find(
-    (s) => s.id === parseInt(route.params.id)
-  );
 }
 
 function savePost() {
