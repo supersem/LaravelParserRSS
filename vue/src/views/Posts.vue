@@ -4,6 +4,11 @@
       <div class="flex justify-between items-center">
         <h1 class="text-3xl font-bold text-gray-900">Posts</h1>
         <div>
+          <button @click="toggleSortDirection('published_at')">
+            Sort Published {{ sortDirection === 'asc' ? '▲' : '▼' }}
+          </button>
+        </div>
+        <div>
           <input
             v-model="searchQuery"
             type="text"
@@ -125,14 +130,25 @@ import PageComponent from '../components/PageComponent.vue'
 
 const posts = computed(() => store.state.posts);
 
-const searchQuery = ref(null);
+const searchQuery = ref('');
+const sortField = ref('published_at'); // Default sorting field
+const sortDirection = ref('asc'); // Default sorting direction
+
+function performSearch() {
+  store.commit('clearPosts');
+  store.dispatch('searchPosts', searchQuery.value);
+}
 
 const getPosts = () => {
-      store.dispatch('getPosts', searchQuery.value);
+  store.dispatch("getPosts", {
+    searchQuery: searchQuery.value,
+    sortField: sortField.value,
+    sortDirection: sortDirection.value,
+  });
     };
 
-watchEffect((searchQuery) => {
-  getPosts();
+watchEffect(() => {
+  performSearch();
 });
 
 function deletePost(post) {
@@ -153,6 +169,20 @@ function getForPage(ev, link) {
     return;
   }
 
-  store.dispatch("getPosts", { url: link.url });
+  store.dispatch("getPosts", {
+    url: link.url,
+    searchQuery: searchQuery.value,
+    sortField: sortField.value,
+    sortDirection: sortDirection.value,
+  });
+}
+
+function toggleSortDirection(field) {
+  // Toggle the sort direction when the button is clicked
+  sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+  sortField.value = field;
+
+  // Call performSearch when the sort direction changes
+  getPosts();
 }
 </script>

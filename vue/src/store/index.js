@@ -28,7 +28,7 @@ const store = createStore({
 
     getters: {
     },
-    
+
     actions: {
       register({commit}, user) {
         return axiosClient.post('/register', user)
@@ -56,14 +56,16 @@ const store = createStore({
           })
       },
 
-      getPosts({ commit }, searchQuery, {url = null} = {}) {
+      getPosts({ commit }, { url, searchQuery, sortField, sortDirection } = {}) {
         commit('setPostsLoading', true);
         url = url || "/posts";
-        return axiosClient.get(url, {
-          params: {
-          q: searchQuery,
-        },
-        }).then((res) => {
+        let queryParams = '';
+        if (url === '/posts') {
+          queryParams = `?q=${searchQuery}&sort=${sortField}&order=${sortDirection}`;
+        } else {
+          queryParams = `&q=${searchQuery}&sort=${sortField}&order=${sortDirection}`;
+        }
+        return axiosClient.get(url + queryParams).then((res) => {
           commit('setPostsLoading', false);
           commit("setPosts", res.data);
           return res;
@@ -115,7 +117,16 @@ const store = createStore({
         }
 
         return response;
-      }
+      },
+
+      searchPosts({ commit }, searchQuery) {
+        commit('setPostsLoading', true);
+        return axiosClient.get(`/posts?q=${searchQuery}`).then((res) => {
+          commit('setPostsLoading', false);
+          commit('setPosts', res.data);
+          return res;
+        });
+      },
     },
 
     mutations: {
@@ -157,6 +168,10 @@ const store = createStore({
         setTimeout(() => {
           state.notification.show = false;
         }, 3000)
+      },
+
+      clearPosts: (state) => {
+        state.posts.data = [];
       },
     },
     modules: {},

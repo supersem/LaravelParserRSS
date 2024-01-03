@@ -9,7 +9,7 @@
           v-if="route.params.id"
           type="button"
           @click="deletePost()"
-          class="py-2 px-3 text-white bg-red-500 rounded-md hover:bg-red-600"
+          class="py-2 px-3 text-white bg-red-500 rounded-md hover:bg-red-600 post-view-del-button"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -112,8 +112,15 @@
         </div>
         <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
           <button
-            type="submit"
+            type="button"
+            @click="hideModal"
             class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="ml-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Save
           </button>
@@ -168,8 +175,7 @@ function savePost() {
       message: "The post was successfully " + action,
     });
     router.push({
-      name: "PostView",
-      params: { id: data.data.id },
+      name: "Posts",
     });
   });
 }
@@ -187,6 +193,17 @@ function deletePost() {
     });
   }
 }
+
+function hideModal() {
+  router.push({
+    name: "Posts",
+  });
+}
 </script>
 
-<style></style>
+<style scoped>
+  .post-view-del-button{
+    min-width: fit-content;
+    margin-left: 30px;
+  }
+</style>
