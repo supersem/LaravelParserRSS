@@ -29,6 +29,28 @@
     </template>
     <div v-if="postLoading" class="flex justify-center">Loading...</div>
     <form v-else @submit.prevent="savePost">
+      <Alert v-if="errorMsg">
+        {{ errorMsg }}
+        <span
+          @click="errorMsg = ''"
+          class="w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer hover:bg-[rgba(0,0,0,0.2)]"
+        >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </span>
+      </Alert>
       <div class="shadow sm:rounded-md sm:overflow-hidden">
         <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
           <div>
@@ -136,6 +158,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import store from "../store";
 import PageComponent from '../components/PageComponent.vue'
+import Alert from "../components/Alert.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -149,6 +172,7 @@ let model = ref({
   url: "",
   category: "",
 });
+let errorMsg = ref("");
 
 watch(
   () => store.state.currentPost.data,
@@ -177,7 +201,11 @@ function savePost() {
     router.push({
       name: "Posts",
     });
-  });
+  })
+    .catch((err) => {
+      errorMsg.value = err.response.data.message;
+      console.log(err.response.data.message)
+    });
 }
 
 function deletePost() {
